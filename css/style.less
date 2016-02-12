@@ -1,0 +1,362 @@
+@import "fonts.less";
+
+html, body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background-color:black;
+  color: white;
+  overflow: hidden;
+}
+
+button {
+    margin      : 0;
+    padding     : 0;
+    border      : 0;
+    background  : transparent;
+    font-family : inherit;
+    font-size   : 1em;
+    cursor      : pointer;
+    color: inherit;
+    outline: 0;
+}
+
+#contents {
+  height: 100%;
+  width: 100%;
+
+  #background-artwork {
+    height: 100%;
+    width: 100%;
+    background-image: url(http://i1.sndcdn.com/artworks-000141537974-fidiga-t500x500.jpg);
+    background-size: cover;
+    background-position: center center;
+    -webkit-filter: blur(10px);
+
+    #background-artwork-tint {
+      height: 100%;
+      width: 100%;
+      background-color: rgba(0,0,0,0.5);
+    }
+
+  }
+
+  #header {
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    height: 60px;
+    text-align: right;
+
+    #menu {
+      padding: 20px 20px 5px 10px;
+
+      button i {
+        padding: 5px;
+        text-shadow: 0px 1px 2px rgba(0,0,0,.75);
+      }
+
+    }
+
+  }
+
+  #info {
+    height: 50px;
+    width: 100%;
+    position:absolute;
+    top:50px;
+    text-align: center;
+
+    span {
+      display: block;
+      white-space: nowrap;
+      text-shadow: 0px 2px 4px rgba(0,0,0,.75);
+    }
+
+    #artist {
+      font-size: 15px;
+      font-family: 'Aileron-Light';
+    }
+
+    #track {
+      font-size: 30px;
+      font-family: 'Aileron-Regular';
+    }
+
+  }
+
+  #album-artwork {
+    position:absolute;
+    top:125px;
+    left: 30px;
+    right: 30px;
+    bottom: 160px;
+    text-align: center;
+
+    img {
+      margin: auto;
+      max-height: 100%;
+      max-width: 100%;
+      box-shadow: 0px 4px 8px 0px rgba(0,0,0,0.75);
+    }
+
+    #video {
+      display: none;
+
+      iframe {
+        height: 100%;
+        width: 100%;
+        box-shadow: 0px 4px 8px 0px rgba(0,0,0,0.75);
+      }
+
+    }
+
+    #spotify {
+      display: none;
+    }
+  }
+
+  #controls {
+    text-align: center;
+    position:absolute;
+    padding-bottom: 15px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 125px;
+
+    #buttons {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      i {
+        padding: 3px;
+        margin: 4px;
+        text-shadow: 0px 2px 8px rgba(0,0,0,.75);
+
+      }
+
+      button:not(.enabled) {
+        color: gray;
+      }
+
+      #play-toggle {
+        &:not(.playing) i.fa-pause-circle {
+            display: none !important;
+        }
+
+        &.playing i.fa-play-circle {
+            display: none !important;
+        }
+      }
+
+    }
+
+    #progress {
+      width: 75%;
+      margin: auto;
+      display: flex;
+      justify-content: center;
+
+      span {
+        font-family: 'Aileron-Light';
+        font-size: 13px;
+        text-shadow: 0px 2px 4px rgba(0,0,0,.75);
+      }
+
+      progress {
+        flex-grow: 1;
+        flex-shrink: 1;
+        flex-basis: 0px;
+        margin: 5px 10px 0px 10px;
+
+        height: 8px;
+        /* Important Thing */
+        -webkit-appearance: none;
+        border: none;
+      }
+
+      progress::-webkit-progress-bar {
+        background: black;
+        border-radius: 50px;
+        padding: 1px;
+        box-shadow: 0 1px 0px 0 rgba(255, 255, 255, 0.1);
+      }
+
+      progress::-webkit-progress-value {
+        border-radius: 50px;
+        box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.4);
+        background:
+          -webkit-linear-gradient(45deg, transparent, transparent 33%, rgba(0, 0, 0, 0.1) 33%, rgba(0, 0, 0, 0.1) 66%, transparent 66%),
+          -webkit-linear-gradient(top, rgba(255, 255, 255, 0.25), rgba(0, 0, 0, 0.2)),
+          -webkit-linear-gradient(left, #FAFAFA, #9E9E9E);
+
+        /* Looks great, now animating it */
+        background-size: 25px 14px, 100% 100%, 100% 100%;
+        -webkit-animation: move 5s linear 0 infinite;
+      }
+
+      @-webkit-keyframes move {
+        0% {background-position: 0px 0px, 0 0, 0 0}
+        100% {background-position: -100px 0px, 0 0, 0 0}
+      }
+    }
+
+  }
+
+  #track-list {
+    background-color:rgba(0,0,0,.5);
+    position: absolute;
+    top: 60px;
+    left: 0;
+    right: 0;
+    bottom: 75px;
+
+    ul {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+
+        li {
+          padding: 15px 30px 15px 20px;
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+
+          &:nth-child(odd) {
+            background-color: rgba(0,0,0,0);
+          }
+
+          &:nth-child(even) {
+            background-color: rgba(255,255,255,.15);
+          }
+
+          img {
+              width:40px;
+              height:40px;
+              border: none;
+          }
+
+          .info {
+            margin-left: 10px;
+            display: flex;
+            flex-direction: column;
+
+            .artist {
+                font-size: 12px;
+                font-family: 'Aileron-Light';
+            }
+
+            .track {
+                font-size: 15px;
+                font-family: 'Aileron-Regular';
+            }
+          }
+        }
+    }
+
+  }
+
+  #footer {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    height: 75px;
+    background-color: black;
+    border-top: 1px solid rgba(255,255,255,.1);
+  }
+
+  &.full-screen {
+
+    i:not(.full-screen) {
+      display: none;
+    }
+
+    #track-list {
+      display: none;
+    }
+
+    #footer {
+      display: none;
+    }
+
+  }
+
+  &:not(.full-screen) {
+
+    #header {
+      background-color: black;
+      border-bottom: 1px solid rgba(255,255,255,.1);
+    }
+
+    #track-list {
+
+    }
+
+    #info {
+      width: auto;
+      top: auto;
+      left:150px;
+      bottom:0;
+      margin-bottom: 5px;
+      text-align: left;
+
+      #artist {
+        font-size: 12px;
+      }
+
+      #track {
+        font-size: 15px;
+      }
+    }
+
+    #album-artwork {
+      display: none;
+    }
+
+    #controls {
+      height: 55px;
+      width: 150px;
+
+      #buttons {
+        justify-content: flex-start;
+        margin-left: 20px;
+      }
+
+      #progress {
+        display: none;
+      }
+    }
+
+    i.full-screen {
+      display: none;
+    }
+
+  }
+
+}
+
+#drop-zone {
+  position: absolute;
+  z-index: 3;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background-color: #01579B;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  display: none;
+}
+
+#link-grabber {
+  height:100%;
+  width: 100%;
+  opacity: 0;
+}

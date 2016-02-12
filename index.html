@@ -2,12 +2,83 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <title>Hello World!</title>
+    <title>AnyQueue(TM)</title>
+
+    <!-- styles -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/less" href="css/style.less">
   </head>
   <body>
-    <h1>Hello World!</h1>
-    We are using node <script>document.write(process.versions.node)</script>,
-    Chrome <script>document.write(process.versions.chrome)</script>,
-    and Electron <script>document.write(process.versions.electron)</script>.
+    <div id="contents">
+      <div id="background-artwork">
+        <div id="background-artwork-tint"></div>
+      </div>
+      <div id="track-list">
+        <ul></ul>
+      </div>
+      <div id="header">
+        <div id="menu">
+          <button id="add">
+              <i class="fa fa-plus full-screen"></i>
+              <i class="fa fa-plus"></i>
+          </button>
+          <button id="queue">
+              <i class="fa fa-bars full-screen"></i>
+              <i class="fa fa-bars"></i>
+          </button>
+        </div>
+      </div>
+      <div id="footer"></div>
+      <div id="info">
+        <span id="artist">Meghan Trainor</span>
+        <span id="track">Like I'm Gonna Lose Youy<span>
+      </div>
+      <div id="album-artwork">
+        <img src="http://i1.sndcdn.com/artworks-000141537974-fidiga-t500x500.jpg">
+        <div id="video"></div>
+        <div id="spotify">
+          <iframe></iframe>
+        </div>
+      </div>
+      <div id="controls">
+        <div id="buttons">
+          <button id="previous">
+            <i class="fa fa-step-backward fa-2x full-screen"></i>
+            <i class="fa fa-step-backward fa-lg"></i>
+          </button>
+          <button id="play-toggle">
+            <i class="fa fa-play-circle fa-4x full-screen"></i>
+            <i class="fa fa-play-circle fa-3x"></i>
+            <i class="fa fa-pause-circle fa-4x full-screen"></i>
+            <i class="fa fa-pause-circle fa-3x"></i>
+          </button>
+          <button id="next">
+            <i class="fa fa-step-forward fa-2x full-screen"></i>
+            <i class="fa fa-step-forward fa-lg"></i>
+          </button>
+        </div>
+        <div id="progress">
+          <span id="current-time">0:00</span>
+          <progress id="progress-bar" value="35" max="100"></progress>
+          <span id="duration">5:34</span>
+        </div>
+      </div>
+    </div>
+    <div id="drop-zone">
+        <textarea id="link-grabber"></textarea>
+    </div>
   </body>
+
+  <!-- scripts -->
+  <script>window.$ = window.jQuery = require('jquery');</script>
+  <script>window.moment = require('moment');</script>
+  <script>window.uuid = require('node-uuid');</script>
+  <script src="./js/eventListeners.js"></script>
+  <script src="./js/ui.js"></script>
+  <script src="./js/platforms.js"></script>
+    <script src="./js/keys.js"></script>
+    <script src="./js/soundcloud.js"></script>
+    <script src="./js/youtube.js"></script>
+    <script src="./js/spotify.js"></script>
+  <script src="./js/logic.js"></script>
 </html>

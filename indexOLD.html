@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>AnyQueue(TM)</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <style>
+        @font-face {
+            font-family: "Aileron";
+            src: url(fonts/Aileron-Regular.otf);
+        }
+
+        @font-face {
+            font-family: "Aileron Light";
+            src: url(fonts/Aileron-Light.otf);
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: "Aileron", sans-serif;
+            overflow: hidden;
+            background-color: black;
+        }
+
+        button {
+            margin      : 0;
+            padding     : 0;
+            border      : 0;
+            background  : transparent;
+            font-family : inherit;
+            font-size   : 1em;
+            cursor      : pointer;
+            color: inherit;
+            outline: 0;
+        }
+
+        #queue-ui {
+            position:absolute;
+            z-index:1;
+            background-color: rgba(0,0,0,.85);
+            overflow-x: hidden;
+            overflow-y: hidden;
+            height: 100%;
+            width: 100%;
+            color: white;
+        }
+
+        body.full-screen #queue-ui {
+            display: none;
+        }
+
+        #trackList {
+            position: absolute;
+            top: 75px;
+            bottom: 65px;
+            left:0;
+            right:0;
+            overflow-x: hidden;
+            overflow-y: scroll;
+        }
+
+        #trackList ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        #trackList ul li {
+            padding: 15px 30px 15px 20px;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+        }
+
+        #trackList ul li:nth-child(odd) {
+            background-color: rgba(0,0,0,0);
+        }
+
+        #trackList ul li:nth-child(even) {
+            background-color: rgba(255,255,255,.15);
+        }
+
+        #trackList ul li img {
+            width:40px;
+            height:40px;
+            border: none;
+        }
+
+        #trackList ul li .info {
+            margin-left: 10px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #trackList ul li .artist {
+            font-size: 12px;
+        }
+
+        #trackList ul li .track {
+            font-size: 15px;
+        }
+
+        #header {
+            background-color: green;
+            height: 35px;
+        }
+
+        #album-art-bg {
+            position:absolute;
+            z-index: 0;
+            top:-10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            background-image: url(http://i1.sndcdn.com/artworks-000141537974-fidiga-t500x500.jpg);
+            background-size: cover;
+            background-position: center center;
+            -webkit-filter: blur(10px);
+        }
+
+        #playback-ui {
+            position: absolute;
+            z-index: 1;
+            color: white;
+            text-shadow: 0px 2px 4px rgba(0,0,0,.75);
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+        }
+
+        body:not(.full-screen) #playback-ui {
+            top: auto;
+            border-top:1px solid rgba(255,255,255,0.5);
+            height: 65px;
+        }
+
+        body.full-screen #playback-ui {
+            top: 0;
+        }
+
+        #menu {
+            z-index: 2;
+            position:absolute;
+            top: 0;
+            left: auto;
+            right: 0;
+            bottom: auto;
+            padding: 10px;
+        }
+
+        body:not(full-screen) #menu {
+            display: none;
+        }
+
+        body.full-screen #menu {
+            display: block;
+        }
+
+        #menu i {
+            padding: 3px;
+            margin: 2px;
+            text-shadow: 0px 1px 2px rgba(0,0,0,.75);
+        }
+
+        #info-and-controls {
+            z-index: 1;
+            position: absolute;
+            top:0;
+            left:0;
+            right:0;
+            bottom: 0px;
+            background-color: rgba(0,0,0,.5);
+            display: flex;
+            justify-content: space-between;
+            overflow: hidden;
+        }
+
+        body:not(.full-screen) #info-and-controls {
+            flex-direction: row;
+        }
+
+        body.full-screen #info-and-controls {
+            flex-direction: column;
+        }
+
+        #info {
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            padding-top: 50px;
+            /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#000000+0,000000+100&0.65+0,0+100;Neutral+Density */
+background: -moz-linear-gradient(top, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0) 100%); /* FF3.6-15 */
+background: -webkit-linear-gradient(top, rgba(0,0,0,0.65) 0%,rgba(0,0,0,0) 100%); /* Chrome10-25,Safari5.1-6 */
+background: linear-gradient(to bottom, rgba(0,0,0,0.65) 0%,rgba(0,0,0,0) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a6000000', endColorstr='#00000000',GradientType=0 ); /* IE6-9 */
+        }
+
+        body:not(.full-screen) #info {
+            order: 2;
+            text-align: left;
+            margin-left: 20px;
+        }
+
+        body.full-screen #info {
+            text-align: center;
+        }
+
+        #artist {
+            white-space: nowrap;
+            font-family: "Aileron Light";
+        }
+
+        body:not(.full-screen) #artist {
+            font-size: 12px;
+        }
+
+        #track {
+            white-space: nowrap;
+        }
+
+        body.full-screen #track {
+            font-size: 30px;
+        }
+
+        #artwork {
+            text-align: center;
+            margin-top:25px;
+            margin-bottom:25px;
+            flex-grow: 1;
+            flex-shrink: 1;
+            flex-basis: 0px;
+            overflow: hidden;
+            background-image:url("http://i1.sndcdn.com/artworks-000141537974-fidiga-t500x500.jpg");
+            background-size:contain;
+            background-repeat:no-repeat;
+            background-position:center center;
+        }
+
+        body:not(.full-screen) #artwork {
+
+        }
+
+        #image {
+            height: 100%;
+            width:100%;
+            box-shadow: 0px 4px 8px 0px rgba(0,0,0,0.75);
+        }
+
+        #controls {
+            padding-bottom:50px;
+            text-align: center;
+            /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#000000+0,000000+100&0.65+0,0+100;Neutral+Density */
+background: -moz-linear-gradient(bottom, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0) 100%); /* FF3.6-15 */
+background: -webkit-linear-gradient(bottom, rgba(0,0,0,0.65) 0%,rgba(0,0,0,0) 100%); /* Chrome10-25,Safari5.1-6 */
+background: linear-gradient(to top, rgba(0,0,0,0.65) 0%,rgba(0,0,0,0) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a6000000', endColorstr='#00000000',GradientType=0 ); /* IE6-9 */
+        }
+
+        #controls #buttons {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: row;
+        }
+
+        #controls #buttons i {
+            padding: 3px;
+            margin: 4px;
+            text-shadow: 0px 2px 8px rgba(0,0,0,.75);
+        }
+
+        #controls #buttons button:not(.enabled) {
+            color: gray;
+        }
+
+        #controls #buttons button.enabled {
+            color: white;
+        }
+
+        body:not(.full-screen) #controls i.full-screen {
+            order: 1;
+            display: none;
+        }
+
+        body:not(.full-screen) #controls i:not(.full-screen) {
+            display: block;
+        }
+
+        body.full-screen #controls i.full-screen {
+            display: block;
+        }
+
+        body.full-screen #controls i:not(.full-screen) {
+            display: none;
+        }
+
+        #play-toggle:not(.playing) i.fa-pause-circle {
+            display: none !important;
+        }
+
+        #play-toggle.playing i.fa-play-circle {
+            display: none !important;
+        }
+
+        #drop-zone {
+            position: absolute;
+            z-index: 3;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background-color: #01579B;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            display: none;
+        }
+
+        #link-grabber {
+            height:100%;
+            width: 100%;
+            opacity: 0;
+        }
+
+        #video {
+            z-index:0;
+            position:absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background-color: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #youtube-player {
+            height: 100%;
+            min-height: 360px;
+            width: 100%;
+            min-width: 480px;
+        }
+
+        #spotify {
+            display: none;
+        }
+
+    </style>
+  </head>
+  <body ondragover="allowDrop(event)">
+      <div id="album-art-bg">
+      </div>
+      <div id="queue-ui">
+          <div id="header">
+              <!-- <form id="search">
+                  <input id="search-field" type="text" placeholder="http://soundcloud.com/sdfsdf">
+                  <button type="submit">Add</button>
+              </form> -->
+          </div>
+          <div id="trackList">
+              <ul>
+              </ul>
+          </div>
+      </div>
+      <div id="playback-ui">
+          <div id="info-and-controls">
+              <div id="info">
+                  <span id="artist">Meghan Trainor</span>
+                  <span id="track">Like I'm Gonna Lose You<span>
+              </div>
+              <div id="artwork">
+              </div>
+              <div id="controls">
+                  <div id="buttons">
+                      <button id="previous">
+                          <i class="fa fa-step-backward fa-2x full-screen"></i>
+                          <i class="fa fa-step-backward fa-lg"></i>
+                      </button>
+                      <button id="play-toggle">
+                          <i class="fa fa-play-circle fa-4x full-screen"></i>
+                          <i class="fa fa-play-circle fa-3x"></i>
+                          <i class="fa fa-pause-circle fa-4x full-screen"></i>
+                          <i class="fa fa-pause-circle fa-3x"></i>
+                      </button>
+                      <button id="next">
+                          <i class="fa fa-step-forward fa-2x full-screen"></i>
+                          <i class="fa fa-step-forward fa-lg"></i>
+                      </button>
+                  </div>
+                  <div id="progress">
+                      <progress id="progress-bar" value="0" max="100"></progress>
+                  </div>
+              </div>
+          </div>
+          <div id="video">
+              <div id="youtube-player"></div>
+          </div>
+          <div id="spotify">
+            <iframe src="" width="300" height="80" frameborder="0" allowtransparency="true"></iframe>
+          </div>
+      </div>
+      <div id="drop-zone" ondragleave="hideDrop(event)">
+          <textarea id="link-grabber"></textarea>
+      </div>
+      <div id="menu">
+          <button id="add">
+              <i class="fa fa-plus"></i>
+          </button>
+          <button id="queue">
+              <i class="fa fa-bars"></i>
+          </button>
+      </div>
+  </body>
+  <script>window.$ = window.jQuery = require('./js/jquery-2.1.4.js');</script>
+  <script src="./js/attrchange.js"></script>
+  <script>window.SC = require('soundcloud');</script>
+  <script>window.YouTube = require('youtube-node');</script>
+  <script>window.uuid = require('node-uuid');</script>
+  <script>window.YouTubePlayer = require('youtube-player');</script>
+  <script>window.Spotify = require('spotify');</script>
+  <script src="./js/script.js"></script>
+</html>
